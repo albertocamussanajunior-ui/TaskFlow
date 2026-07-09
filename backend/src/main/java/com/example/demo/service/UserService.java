@@ -73,4 +73,74 @@ public class UserService {
     public List<User> listUsers() {
         return userRepository.findAll();
     }
+
+    public Optional<User> getUser(String id) {
+        return userRepository.findById(id);
+    }
+
+    public User createUser(CreateUserRequest request) {
+        userRepository.findByEmail(request.getEmail()).ifPresent(user -> {
+            throw new IllegalArgumentException("Email already exists");
+        });
+
+        User user = User.builder()
+                .email(request.getEmail())
+                .fullName(request.getFullName())
+                .password(passwordEncoder.encode(request.getPassword()))
+                .role(request.getRole() != null ? request.getRole() : "member")
+                .status(parseStatus(request.getStatus(), UserStatus.ACTIVE))
+                .build();
+
+        return userRepository.save(user);
+    }
+
+    public Optional<User> updateUser(String id, UpdateUserRequest request) {
+        return userRepository.findById(id).map(user -> {
+            if (request.getEmail() != null && !request.getEmail().equalsIgnoreCase(user.getEmail())) {
+                userRepository.findByEmail(request.getEmail()).ifPresent(existing -> {
+                    throw new IllegalArgumentException("Email already exists");
+                });
+                user.setEmail(request.getEmail());
+            }
+
+            if (request.getFullName() != null) {
+                user.setFullName(request.getFullName());
+            }
+
+            if (request.getPassword() != null && !request.getPassword().isBlank()) {
+                user.setPassword(passwordEncoder.encode(request.getPassword()));
+            }
+
+            if (request.getRole() != null) {
+                user.setRole(request.getRole());
+            }
+
+            if (request.getStatus() != null) {
+                user.setStatus(parseStatus(request.getStatus(), user.getStatus()));
+            }
+
+            return userRepository.save(user);
+        });
+    }
+
+    public boolean deleteUser(String id) {
+        return userRepository.findById(id).map(user -> {
+            userRepository.delete(user);
+            return true;
+        }).orElse(false);
+    }
+
+    private UserStatus parseStatus(String status, UserStatus fallback) {
+        if (status == null || status.isBlank()) {
+            return fallback;
+        }
+
+        for (UserStatus value : UserStatus.values()) {
+            if (value.getValue().equalsIgnoreCase(status) || value.name().equalsIgnoreCase(status)) {
+                return value;
+            }
+        }
+
+        return fallback;
+    }
 }

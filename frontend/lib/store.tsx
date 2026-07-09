@@ -22,7 +22,7 @@ import {
   type UpdateStatusRequest,
   type UpdateTaskRequest,
 } from "@/api/tasks/fetches";
-import { fetchUsers, mapApiUserToFrontend } from "@/api/users/fetches";
+import { createUser, fetchUsers, mapApiUserToFrontend, type CreateUserRequest } from "@/api/users/fetches";
 import {
   clearStoredSession,
   decodeToken,
@@ -79,6 +79,7 @@ interface AppState {
   teamMembers: TeamMember[];
   setAuthenticated: (value: boolean, payload?: TokenPayload | null) => void;
   refreshData: () => Promise<void>;
+  addUser: (body: CreateUserRequest) => Promise<TeamMember | null>;
   addProject: (body: CreateProjectRequest) => Promise<void>;
   editProject: (id: string, body: CreateProjectRequest) => Promise<void>;
   editProjectStatus: (id: string, body: ProjectUpdateStatusRequest) => Promise<void>;
@@ -176,6 +177,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addProject = async (body: CreateProjectRequest) => {
     const created = await createProject(body);
     if (created) setProjects((prev) => [...prev, created]);
+  };
+
+  const addUser = async (body: CreateUserRequest) => {
+    const created = await createUser(body);
+    if (created) setTeamMembers((prev) => [...prev, created]);
+    return created;
   };
 
   const editProject = async (id: string, body: CreateProjectRequest) => {
@@ -278,6 +285,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
       teamMembers,
       setAuthenticated: handleSetAuthenticated,
       refreshData,
+      addUser,
       addProject,
       editProject,
       editProjectStatus,

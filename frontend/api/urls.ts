@@ -21,7 +21,11 @@ export const INVITE_USER = `${host}/auth/invite`;
 export const USER_ACCEPT_INVITE = `${host}/auth/accept-invite`;
 export const CREATE_PROJECT = `${host}/projects`;
 export const CREATE_TASK = (projectId: string) => `${host}/projects/${projectId}/tasks`;
+export const CREATE_USER = `${host}/users`;
 
 export const DELETE_PROJECT = (id: string) => `${host}/projects/${id}`;
 export const DELETE_TASK = (id: string) => `${host}/tasks/${id}`;
 export const DELETE_NOTIFICATION  = (id: string) => `${host}/notifications/${id}`;
+export const GET_USER = (id: string) => `${host}/users/${id}`;
+export const UPDATE_USER = (id: string) => `${host}/users/${id}`;
+export const DELETE_USER = (id: string) => `${host}/users/${id}`;

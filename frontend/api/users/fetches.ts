@@ -1,5 +1,5 @@
 import type { TeamMember } from "@/lib/store";
-import { LIST_USERS } from "../urls";
+import { CREATE_USER, LIST_USERS } from "../urls";
 import universalRequest from "../universalRequest";
 
 export interface ApiUser {
@@ -11,6 +11,14 @@ export interface ApiUser {
   role?: string;
   status?: string;
   InviteToken?: string;
+}
+
+export interface CreateUserRequest {
+  email: string;
+  full_name: string;
+  password: string;
+  role?: string;
+  status?: string;
 }
 
 export const mapApiUserToFrontend = (api: ApiUser): TeamMember => ({
@@ -25,4 +33,9 @@ export const mapApiUserToFrontend = (api: ApiUser): TeamMember => ({
 
 export async function fetchUsers(): Promise<ApiUser[] | null> {
   return universalRequest<undefined, ApiUser[]>(LIST_USERS, "GET");
+}
+
+export async function createUser(body: CreateUserRequest): Promise<TeamMember | null> {
+  const response = await universalRequest<CreateUserRequest, ApiUser>(CREATE_USER, "POST", { body });
+  return response ? mapApiUserToFrontend(response) : null;
 }

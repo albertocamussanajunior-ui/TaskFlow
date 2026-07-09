@@ -1,0 +1,12 @@
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.10.198:3000
+- Environments: .env.local
+✓ Ready in 4.5s
+
+✓ Finished filesystem cache database compaction in 11.0s
+ GET /manager/team 200 in 4.8s (next.js: 3.3s, application-code: 1548ms)
+ GET / 200 in 806ms (next.js: 540ms, application-code: 265ms)
+ GET / 200 in 130ms (next.js: 15ms, application-code: 115ms)
+ GET /manager/dashboard 200 in 801ms (next.js: 250ms, application-code: 551ms)
+ GET /manager/team 200 in 120ms (next.js: 23ms, application-code: 97ms)
