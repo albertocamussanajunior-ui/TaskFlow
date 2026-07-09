@@ -1,0 +1,780 @@
+basePath: /pms/v1
+definitions:
+  dtos.AcceptInviteRequest:
+    properties:
+      password:
+        minLength: 6
+        type: string
+      token:
+        type: string
+    required:
+    - password
+    - token
+    type: object
+  dtos.CreateProjectRequest:
+    properties:
+      description:
+        type: string
+      due_date:
+        type: string
+      members:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      responsible:
+        type: string
+      start_date:
+        type: string
+    required:
+    - name
+    type: object
+  dtos.CreateTaskRequest:
+    properties:
+      assignee:
+        type: string
+      depends_on:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      name:
+        type: string
+      priority:
+        type: string
+      status:
+        type: string
+    required:
+    - name
+    type: object
+  dtos.InviteUserRequest:
+    properties:
+      email:
+        type: string
+      full_name:
+        type: string
+      role:
+        type: string
+    required:
+    - email
+    - full_name
+    type: object
+  dtos.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  dtos.LoginResponse:
+    properties:
+      access_token:
+        type: string
+    type: object
+  dtos.UpdateProjectRequest:
+    properties:
+      description:
+        type: string
+      due_date:
+        type: string
+      members:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      responsible:
+        type: string
+      start_date:
+        type: string
+    required:
+    - name
+    type: object
+  dtos.UpdateProjectStatusRequest:
+    properties:
+      status:
+        type: string
+    type: object
+  dtos.UpdateTaskRequest:
+    properties:
+      assignee:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      name:
+        type: string
+      priority:
+        type: string
+    required:
+    - name
+    type: object
+  dtos.UpdateTaskStatusRequest:
+    properties:
+      status:
+        type: string
+    type: object
+  models.Priority:
+    enum:
+    - low_priority
+    - medium_priority
+    - high_priority
+    - critical_priority
+    type: string
+    x-enum-varnames:
+    - LowPriority
+    - MediumPriority
+    - HighPriority
+    - CriticalPriority
+  models.Project:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      deleted_by:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      id:
+        type: string
+      last_accessed_at:
+        type: string
+      members:
+        items:
+          type: string
+        type: array
+      name:
+        type: string
+      responsible:
+        type: string
+      start_date:
+        type: string
+      status:
+        $ref: '#/definitions/models.Status'
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.Status:
+    enum:
+    - active
+    - completed
+    - paused
+    type: string
+    x-enum-varnames:
+    - ActiveProject
+    - CompletedProject
+    - PausedProject
+  models.Task:
+    properties:
+      assignee:
+        type: string
+      created_at:
+        type: string
+      created_by:
+        type: string
+      deleted_by:
+        type: string
+      depends_on:
+        type: string
+      description:
+        type: string
+      due_date:
+        type: string
+      id:
+        type: string
+      last_accessed_at:
+        type: string
+      name:
+        type: string
+      priority:
+        $ref: '#/definitions/models.Priority'
+      project_id:
+        type: string
+      status:
+        $ref: '#/definitions/models.TaskStatus'
+      updated_at:
+        type: string
+      updated_by:
+        type: string
+    type: object
+  models.TaskStatus:
+    enum:
+    - todo
+    - in_progress
+    - review
+    - done
+    type: string
+    x-enum-varnames:
+    - ToDOStatus
+    - InProgressStatus
+    - ReviewStatus
+    - DonwStatus
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      full_name:
+        type: string
+      id:
+        type: string
+      inviteToken:
+        type: string
+      role:
+        description: Role         Role       `gorm:"not null;default:member" json:"role"`
+        type: string
+      status:
+        $ref: '#/definitions/models.UserStatus'
+      updated_at:
+        type: string
+    type: object
+  models.UserStatus:
+    enum:
+    - invited
+    - active
+    - disabled
+    type: string
+    x-enum-varnames:
+    - InvitedUser
+    - ActiveUser
+    - DisabledUser
+host: localhost:8080
+info:
+  contact:
+    email: chantelchinha@gmail.com
+    name: Chantel Valoi
+  description: API for managing projects and tasks
+  title: Project Management API
+  version: "1.0"
+paths:
+  /auth/accept-invite:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Accept
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.AcceptInviteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Accept invitation
+      tags:
+      - Auth
+  /auth/invite:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Invite
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.InviteUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Invite user
+      tags:
+      - Auth
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user
+      parameters:
+      - description: Login
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dtos.LoginResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login
+      tags:
+      - Auth
+  /projects:
+    get:
+      consumes:
+      - application/json
+      description: Get all projects
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Project'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List all projects
+      tags:
+      - Projects
+    post:
+      consumes:
+      - application/json
+      description: Create project with basic info
+      parameters:
+      - description: Project data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateProjectRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new project
+      tags:
+      - Projects
+  /projects/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete project by ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a project
+      tags:
+      - Projects
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a single project
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get project by ID
+      tags:
+      - Projects
+    put:
+      consumes:
+      - application/json
+      description: Update project fields by ID
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Project data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdateProjectRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update an existing project
+      tags:
+      - Projects
+  /projects/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update a specific project status
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Update Project status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdateProjectStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update project current status
+      tags:
+      - Projects
+  /projects/{id}/tasks:
+    post:
+      consumes:
+      - application/json
+      description: Create a task inside a project
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.CreateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new task
+      tags:
+      - Tasks
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: List tasks with filters
+      parameters:
+      - description: Project ID
+        in: query
+        name: project_id
+        type: string
+      - description: Assignee
+        in: query
+        name: assignee
+        type: string
+      - description: Status
+        in: query
+        name: status
+        type: string
+      - description: Page
+        in: query
+        name: page
+        type: integer
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Task'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List tasks
+      tags:
+      - Tasks
+  /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete task by ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete task
+      tags:
+      - Tasks
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a task by ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get task by ID
+      tags:
+      - Tasks
+    put:
+      consumes:
+      - application/json
+      description: Update task fields
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task update data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdateTaskRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update task
+      tags:
+      - Tasks
+  /tasks/{id}/status:
+    put:
+      consumes:
+      - application/json
+      description: Update only task status
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task status
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/dtos.UpdateTaskStatusRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update task status
+      tags:
+      - Tasks
+  /users:
+    get:
+      consumes:
+      - application/json
+      description: List users with filters
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List users
+      tags:
+      - Users
+swagger: "2.0"
